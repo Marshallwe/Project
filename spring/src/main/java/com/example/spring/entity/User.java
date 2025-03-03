@@ -1,0 +1,49 @@
+package com.example.spring.entity;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableField;
+import java.io.Serializable;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+
+@Data
+@EqualsAndHashCode(callSuper = false)
+@ApiModel(value="User entity", description="")
+public class User implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    @ApiModelProperty(value = "id")
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
+
+    @ApiModelProperty(value = "account")
+    private String no;
+
+    @ApiModelProperty(value = "name")
+    private String name;
+
+    @ApiModelProperty(value = "password")
+    private String password;
+
+    private Integer age;
+
+    @ApiModelProperty(value = "sex")
+    private Integer sex;
+
+    @ApiModelProperty(value = "phone")
+    private String phone;
+
+    @ApiModelProperty(value = "role 0supermanager 1manager 2normal")
+    private Integer roleId;
+
+    @ApiModelProperty(value = "whether valid,Yvalid,other invalid")
+    @TableField("isValid")
+    private String isvalid;
+
+
+}
