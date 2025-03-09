@@ -1,3 +1,4 @@
 package com.example.spring.controller;
-public class GoodsController {
+
+public class InventoryController {
 }

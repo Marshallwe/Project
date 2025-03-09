@@ -33,8 +33,16 @@ public class User implements Serializable {
     private Integer age;
 
     @ApiModelProperty(value = "sex")
-    private Integer sex;
-
+    private GenderEnum sex;
+    public enum GenderEnum {
+        MALE(0),
+        FEMALE(1);
+        private final int code;
+        GenderEnum(int code) {
+            this.code = code;
+        }
+        public int getCode() { return code; }
+    }
     @ApiModelProperty(value = "phone")
     private String phone;
 
@@ -42,8 +50,7 @@ public class User implements Serializable {
     private Integer roleId;
 
     @ApiModelProperty(value = "whether valid,Yvalid,other invalid")
-    @TableField("isValid")
-    private String isvalid;
-
+    @TableField(value = "is_valid")
+    private Boolean valid;
 
 }
