@@ -3,7 +3,6 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.spring.entity.Product;
 import com.example.spring.mapper.ProductMapper;
-import com.example.spring.service.ProductService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
