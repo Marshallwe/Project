@@ -1,298 +1,100 @@
+
 <template>
-  <div class="login-container">
-    <div class="login-card">
-      <div class="card-content">
-        <!-- 标题部分 -->
-        <div class="header-section">
-          <h1 class="main-title">Inventory Management System</h1>
-          <p class="sub-title">Sign in to your account</p>
-        </div>
+  <div class="login-index" :style="backgroundDiv">
 
-        <!-- 表单部分 -->
-        <el-form
-            ref="loginForm"
-            :model="loginForm"
-            :rules="rules"
-            label-position="top"
-            class="login-form"
-            @submit.native.prevent="confirm"
-        >
-          <!-- 账号输入 -->
-          <el-form-item label="Account" prop="no">
-            <el-input
-                v-model="loginForm.no"
-                placeholder="Enter your account"
-                prefix-icon="el-icon-user"
-                clearable
-                tabindex="1"
-            ></el-input>
+    <div class="login-window-index">
+
+      <div class="title">
+        <b><img src="../resource/logo.png" style="width: 40px;position: relative; top: 13px;right: 6px">
+          <span style="color: #e75c09">Inventory Management System</span>
+        </b>
+      </div>
+
+      <div style="margin-top: 30px">
+
+        <el-form label-width="70px">
+
+          <el-form-item label="username">
+            <el-input v-model.trim="user.username" aria-required="true"></el-input>
           </el-form-item>
 
-          <!-- 密码输入 -->
-          <el-form-item label="Password" prop="password">
-            <el-input
-                v-model="loginForm.password"
-                type="password"
-                placeholder="Enter your password"
-                prefix-icon="el-icon-lock"
-                show-password
-                tabindex="2"
-                @keyup.enter.native="confirm"
-            ></el-input>
+          <el-form-item label="password" style="margin-top: 25px">
+            <el-input v-model.trim="user.password" show-password aria-required="true"></el-input>
           </el-form-item>
 
-          <!-- 提交按钮 -->
-          <el-form-item class="action-item">
-            <el-button
-                type="primary"
-                native-type="submit"
-                class="submit-btn"
-                :loading="confirm_disabled"
-            >
-              {{ confirm_disabled ? 'Signing in...' : 'Sign In' }}
-            </el-button>
+          <el-form-item style="margin: 30px 80px">
+            <el-button type="success" @click="onSubmit">Login</el-button>
+            <el-button @click="$router.push('/register')">Register</el-button>
           </el-form-item>
+
         </el-form>
-
-        <!-- 底部信息 -->
-        <div class="footer-note">
-          <span>© 2025 IM System</span>
-          <span>v1.0.0</span>
-        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import md5 from 'js-md5'
 export default {
   name: "Login",
-  data() {
+  data(){
     return {
-      confirm_disabled: false,
-      loginForm: {
-        no: '',
-        password: ''
+      to: '/',
+      user: {},
+      backgroundDiv: {
+        backgroundImage:
+            "url(" + require("@/resource/img/login_back.png") + ")",
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "100% 100%",
       },
-      rules: {
-        no: [
-          {
-            required: true,
-            message: 'Please input account',
-            trigger: 'blur'
-          },
-          {
-            min: 1,
-            max: 20,
-            message: 'Length should be 1 to 20 characters',
-            trigger: 'blur'
-          }
-        ],
-        password: [
-          {
-            required: true,
-            message: 'Please input password',
-            trigger: 'blur'
-          },
-          {
-            min: 1,
-            max: 20,
-            message: 'Length should be 1 to 20 characters',
-            trigger: 'blur'
-          }
-        ]
-      }
-    };
+    }
+  },
+  created() {
+    this.to = this.$route.query.to ? this.$route.query.to : "/"
   },
   methods: {
-    confirm() {
-      this.$refs.loginForm.validate(valid => {
-        if (!valid) return;
 
-        this.confirm_disabled = true;
-
-        this.$axios.post(this.$httpUrl + '/user/login', this.loginForm)
-            .then(res => {
-              const { code, data } = res.data;
-              if (code === 200) {
-                this.handleLoginSuccess(data);
-              } else {
-                this.handleLoginError();
-              }
-            })
-            .catch(error => {
-              console.error('Login error:', error);
-              this.handleLoginError();
-            });
-      });
-    },
-    handleLoginSuccess(data) {
-      sessionStorage.setItem("CurUser", JSON.stringify(data.user));
-      this.$store.commit("setMenu", data.menu);
-      this.$router.replace('/Index');
-      this.$message.success('Login successful!');
-    },
-    handleLoginError() {
-      this.confirm_disabled = false;
-      this.$message.error('Invalid credentials. Please try again.');
-      this.loginForm.password = '';
-      this.$refs.loginForm.clearValidate('password');
+    onSubmit() {
+      if(this.user.username==='' || this.user.password===''){
+        this.$message.error("The account number or password cannot be empty")
+        return false;
+      }
+      this.user.password = md5(this.user.password);
+      this.request.post("/login",this.user).then(res=>{
+        if(res.code==='200'){
+          this.$message.success({message: "Successful login",showClose: true})
+          this.$router.push(this.to)
+          localStorage.setItem("user",JSON.stringify(res.data))
+        }else{
+          this.$message.error(res.msg)
+        }
+      })
     }
   }
-};
+}
 </script>
 
-<style lang="scss" scoped>
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 2rem;
+<style scoped>
+.login-index {
+  background: #ffffff;
+  height: 100%;
+  position: relative;
 }
 
-.login-card {
-  background: rgba(255, 255, 255, 0.98);
-  border-radius: 1.5rem;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-  width: 100%;
-  max-width: 440px;
-  overflow: hidden;
-  transform: translateY(0);
-  animation: cardEntrance 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-
-  .card-content {
-    padding: 3rem 2.5rem;
-  }
+.login-window-index {
+  padding: 20px;
+  width: 450px;
+  height: 280px;
+  background: #ffffff;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
-.header-section {
+.title {
   text-align: center;
-  margin-bottom: 2.5rem;
-
-  .main-title {
-    font-size: 2rem;
-    color: #2d3748;
-    margin-bottom: 0.75rem;
-    font-weight: 700;
-    letter-spacing: -0.025em;
-  }
-
-  .sub-title {
-    color: #718096;
-    font-size: 0.95rem;
-  }
-}
-
-.login-form {
-  ::v-deep {
-    .el-form-item {
-      margin-bottom: 1.75rem;
-
-      &__label {
-        color: #4a5568;
-        font-weight: 500;
-        padding-bottom: 0.5rem;
-        font-size: 0.9rem;
-      }
-
-      .el-input__inner {
-        height: 48px;
-        border-radius: 0.75rem;
-        border: 1px solid #e2e8f0;
-        transition: all 0.3s ease;
-        font-size: 1rem;
-        padding-left: 2.75rem;
-
-        &:hover {
-          border-color: #c3dafe;
-        }
-
-        &:focus {
-          border-color: #667eea;
-          box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
-        }
-      }
-
-      .el-input__prefix {
-        left: 12px;
-        font-size: 1.1rem;
-        color: #a0aec0;
-      }
-    }
-  }
-}
-
-.action-item {
-  margin-top: 2rem;
-}
-
-.submit-btn {
-  width: 100%;
-  height: 50px;
-  font-weight: 600;
-  font-size: 1rem;
-  border-radius: 0.75rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
-  transition: all 0.3s ease;
-  letter-spacing: 0.5px;
-
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-}
-
-.footer-note {
-  margin-top: 2.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #edf2f7;
-  text-align: center;
-  font-size: 0.85rem;
-  color: #718096;
-  display: flex;
-  justify-content: space-between;
-}
-
-@keyframes cardEntrance {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@media (max-width: 480px) {
-  .login-container {
-    padding: 1rem;
-    background: #667eea;
-  }
-
-  .login-card {
-    border-radius: 1rem;
-
-    .card-content {
-      padding: 2rem 1.5rem;
-    }
-  }
-
-  .header-section {
-    .main-title {
-      font-size: 1.75rem;
-    }
-  }
-
-  .submit-btn {
-    height: 48px;
-  }
+  margin: 30px auto;
+  font-size: 25px;
 }
 </style>

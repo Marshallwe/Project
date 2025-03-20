@@ -7,16 +7,18 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="ims" />
+        <module name="OnlineMall-backend" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="front" target="17" />
+      <module name="ims" target="1.8" />
       <module name="spring" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="OnlineMall-backend" options="-parameters" />
       <module name="front" options="-parameters" />
       <module name="ims" options="-parameters" />
       <module name="spring" options="-parameters" />
