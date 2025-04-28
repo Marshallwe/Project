@@ -152,7 +152,7 @@ export default {
       this.dialogFormVisible = true;
     },
     editAddress(item) {
-      this.address = JSON.parse(JSON.stringify(item));
+      this.address = { ...item };
       this.dialogFormVisible = true;
     },
     deleteAddress(item) {
@@ -171,9 +171,12 @@ export default {
     },
     saveAddress() {
       this.address.userId = this.userId;
-      API.post("/api/address", this.address).then((res) => {
+      const method = this.address.id ? API.put : API.post;
+      const url = this.address.id ? "/api/address" : "/api/address";
+
+      method(url, this.address).then((res) => {
         if (res.code === "200") {
-          this.$message.success("Save successfully");
+          this.$message.success("Success");
           this.loadAddress();
           this.dialogFormVisible = false;
         } else {

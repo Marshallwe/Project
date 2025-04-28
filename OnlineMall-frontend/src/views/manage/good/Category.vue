@@ -27,7 +27,7 @@
                     type="primary"
                     size="mini"
                     @click="handleEditCategory(scope.row)"
-                    >修改</el-button
+                    >modify</el-button
                   >
 
                   <el-popconfirm
